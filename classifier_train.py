@@ -9,7 +9,8 @@ import os
 import argparse
 import tqdm
 from copy import deepcopy
-
+import yaml
+from utils import accuracy
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -76,12 +77,10 @@ def train(opt):
     torch.save(resnet.state_dict(), os.path.join(save_path, f"final_epoch.pt"))
     torch.save(best_model.state_dict(), os.path.join(save_path, f"best_epoch_{best_epoch}.pt"))
     
+    with open(os.path.join(save_path, f"names.yaml"), "w") as f:
+        yaml.dump({v:k for k,v in dataset.class_to_idx.items()}, f)
     
 def run_epoch(model, loss_fn, loader, optimizer, scheduler, device):
-
-    def accuracy(logits, y):
-        _, preds = torch.max(logits, 1)
-        return (preds == y).float().mean()
 
     state = "Train" if model.training else "Valid"
     loss = 0
