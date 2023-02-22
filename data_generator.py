@@ -3,27 +3,20 @@ import cv2
 import os
 import sys
 import torch
-from torchvision import datasets, transforms
-from torch.utils.data import DataLoader
-
+import argparse
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-if __name__ == "__main__":
-    if os.path.isdir("dataset") == False:
-        os.mkdir("dataset")
+def run(opt):
     
-    if len(sys.argv) != 3:
-        print("Insufficient arguments")
-        sys.exit()
     
-    cls_id = sys.argv[1]
-    size = int(sys.argv[2])
+    cls_name = opt.cls_name
+    size = opt.size
 
-    path = os.path.join("dataset", cls_id)
-    if os.path.isdir(path) == False:
-        os.mkdir(path)
-    count = len(os.listdir(path))
+    save_path = os.path.join(opt.save_path, cls_name)
+    if os.path.isdir(save_path) == False:
+        os.makedirs(save_path)
+    count = len(os.listdir(save_path))
 
     mtcnn = MTCNN(device=device)
     cap = cv2.VideoCapture(0)
@@ -41,7 +34,7 @@ if __name__ == "__main__":
                 x1, y1, x2, y2 = list(map(int, face))
                 if i == areas.index(max(areas)):
                     try:
-                        filename = os.path.join(path, f"{cls_id}_{count}.jpg")
+                        filename = os.path.join(save_path, f"{cls_name}_{count}.jpg")
                         count += 1
                         cv2.imwrite(filename, cv2.resize(frame[y1:y2, x1:x2, :], (size, size), interpolation=cv2.INTER_CUBIC))
                     except:
@@ -52,3 +45,16 @@ if __name__ == "__main__":
         key = cv2.waitKey(1)
         if key == ord("q"):
             break
+
+
+def parse():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--save_path", type=str, default="./dataset")
+    parser.add_argument("--cls_name", type=str, default="other")
+    parser.add_argument("--size", type=int, default=256)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    opt = parse()
+    run(opt)
