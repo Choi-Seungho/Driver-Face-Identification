@@ -22,8 +22,7 @@ python classifier_train.py --epochs EPOCHS --batch_size BATCH_SIZE --dataset DAT
 python demo.py --model MODEL_PATH --names NAMES_PATH --size SIZE --source VIDEO or WEBCAM --target TARGET_CLS_ID
 ```
 
-
-##References
+## References
 
 1.timesler / facenet-pytorch: https://github.com/timesler/facenet-pytorch
 
