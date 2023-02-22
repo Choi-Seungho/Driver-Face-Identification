@@ -7,7 +7,7 @@ import argparse
 from copy import deepcopy
 import yaml
 import cv2
-
+from utils import softmax
 
 device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
@@ -52,13 +52,6 @@ def pre_processing(image):
     image = np.expand_dims(image.astype(np.float32), axis=0)
     image = fixed_image_standardization(torch.tensor(image))
     return image
-
-def softmax(x):
-    exp_a = np.exp(x)
-    sum_exp = np.sum(exp_a)
-    y = exp_a / sum_exp
-
-    return y
 
 def parse():
     parser = argparse.ArgumentParser()
